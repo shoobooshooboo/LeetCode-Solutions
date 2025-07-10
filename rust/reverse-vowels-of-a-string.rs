@@ -1,30 +1,29 @@
 impl Solution {
     pub fn reverse_vowels(mut s: String) -> String {
-        //change string to bytes for easy indexing.
+        //simpler solution. only one loop.
+
+        //s to bytes for easy indexing.
         let mut s = s.into_bytes();
-        //vector of vowel indeces
-        let mut vowel_indeces = Vec::new();
-        //find all vowels
-        for (i, c) in s.iter().enumerate(){
-            if Self::is_vowel(c){
-                vowel_indeces.push(i);
+
+        //two pointer approach.
+        let (mut i, mut j) = (0, s.len() - 1);
+        while i < j{
+            //while s[i] is not a vowel, increment i.
+            if !Self::is_vowel(&s[i]){
+                i += 1;
+            } 
+            //while s[j] is not a vowel, decrement j.
+            else if !Self::is_vowel(&s[j]){
+                j -= 1;
+            }
+            //if both are vowels, swap and then update i and j.
+            else{
+                s.swap(i, j);
+                i += 1;
+                j -= 1;
             }
         }
 
-        //no vowels. return.
-        if vowel_indeces.len() == 0{
-            return String::from_utf8(s).unwrap();
-        }
-
-        //two pointers swapping all vowels
-        let (mut i, mut j) = (0, vowel_indeces.len() - 1);
-        while i < j{
-            s.swap(vowel_indeces[i], vowel_indeces[j]);
-            i += 1;
-            j -= 1;
-        }
-
-        //back to string
         String::from_utf8(s).unwrap()
     }
 
