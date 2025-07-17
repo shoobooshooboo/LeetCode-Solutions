@@ -1,21 +1,21 @@
-use std::collections::HashMap;
-use std::collections::HashSet;
 impl Solution {
     pub fn close_strings(word1: String, word2: String) -> bool {
-        //frequency maps
-        let mut freq_map1 = HashMap::new();
-        word1.chars().map(|c| {*freq_map1.entry(c).or_insert_with(|| 0) += 1;}).last();
-        let mut freq_map2 = HashMap::new();
-        word2.chars().map(|c| {*freq_map2.entry(c).or_insert_with(|| 0) += 1;}).last();
+        //theres at most 26 elements, so instead of a hashmap, just use an array.
+        let mut freq1 = [0;26];
+        word1.as_bytes().into_iter().for_each(|c| { freq1[(c - b'a') as usize] += 1;});
+        let mut freq2 = [0;26];
+        word2.as_bytes().into_iter().for_each(|c| { freq2[(c - b'a') as usize] += 1;});
 
-        //now ensure that the same characters are present and the same frequencies are present
-        let mut values1: Vec<u32> = freq_map1.values().map(|n| *n).collect();
-        let mut values2: Vec<u32> = freq_map2.values().map(|n| *n).collect();
-        values1.sort();
-        values2.sort();
-        let keys1: HashSet<char> = freq_map1.keys().map(|c| *c).collect();
-        let keys2: HashSet<char> = freq_map2.keys().map(|c| *c).collect();
+        //make sure all the same characters are used
+        for i in 0..26{
+            if (freq1[i] > 0) != (freq2[i] > 0){
+                return false;
+            }
+        }
 
-        values1 == values2 && keys1 == keys2
+        //make sure all the same frequencies appear
+        freq1.sort();
+        freq2.sort();
+        freq1 == freq2
     }
 }
