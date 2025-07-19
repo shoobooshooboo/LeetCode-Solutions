@@ -1,5 +1,6 @@
+use std::collections::VecDeque;
 struct RecentCounter {
-    pings: Vec<i32> 
+    pings: VecDeque<i32> 
 }
 
 
@@ -11,20 +12,18 @@ impl RecentCounter {
 
     fn new() -> Self {
         Self{
-            pings: Vec::new(),
+            pings: VecDeque::new(),
         }
     }
     
     fn ping(&mut self, t: i32) -> i32 {
-        self.pings.push(t.clone());
-        let mut count = 0;
-        for &p in self.pings.iter().rev(){
-            if p <= t && p >= t - 3000{
-                count += 1;
-            } else { break; }
+        self.pings.push_back(t);
+
+        while self.pings.front().is_some_and(|&p| p < t - 3000){
+            self.pings.pop_front();
         }
 
-        count
+        self.pings.len() as i32
     }
 }
 
