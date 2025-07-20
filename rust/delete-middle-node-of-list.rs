@@ -16,24 +16,25 @@
 // }
 impl Solution {
     pub fn delete_middle(mut head: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
-        if head.clone().unwrap().next.is_none(){
+        // i did the tortoise and the hare solution first, but two passes is just faster in safe rust.
+        let mut n = 0;
+        let mut traveler = head.as_ref();
+        while traveler.is_some(){
+            n += 1;
+            traveler = traveler.unwrap().next.as_ref();
+        }
+
+        if n < 2{
             return None;
         }
-        let mut hare = head.clone().unwrap().next;
-        let mut tortoise = head.as_mut();
 
-        loop{
-            hare = hare.unwrap().next;
-            hare = if hare.is_some() {hare.unwrap().next} else {None};
-
-            if hare.is_none(){
-                break;
-            }
-            tortoise = tortoise.unwrap().next.as_mut();
+        let mut traveler = head.as_mut();
+        for _ in 1..(n / 2){
+            traveler = traveler.unwrap().next.as_mut();
         }
 
-        let mut tortoise = tortoise.unwrap();
-        tortoise.next = tortoise.next.as_mut().unwrap().next.clone();
+        let mut traveler = traveler.unwrap();
+        traveler.next = traveler.next.take().unwrap().next;
 
         head
     }
