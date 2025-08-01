@@ -11,9 +11,7 @@ impl Solution {
         for mut i in 1..=n{
             //if i is even, the bit count is equal to that of i >> 1.
             //if it's odd, it's 1 + i>>1's bit count
-            result[i] = 
-                if i & 1 == 1 {1} else {0} 
-                + result[i >> 1];
+            result[i] = i & 1 + result[i >> 1];
         }
 
         result
