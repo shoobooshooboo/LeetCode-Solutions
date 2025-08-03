@@ -1,20 +1,27 @@
-use std::collections::HashSet;
 impl Solution {
     pub fn min_reorder(n: i32, connections: Vec<Vec<i32>>) -> i32 {
-        //naive, obvious solution. O(n^2) time (gross).
-        let mut can_reach_0 = HashSet::with_capacity(n as usize);
-        can_reach_0.insert(0);
+        //linear solution by reorganizing the connections data.
+        let mut visited = vec![false; n as usize];
+        //this runs off edges being a mapping of city to all of that city's connections
+        let mut edges = Vec::with_capacity(n as usize);
+        edges.resize(n as usize, Vec::new());
+        for c in connections{
+            edges[c[0] as usize].push(c[1]);
+            edges[c[1] as usize].push(-c[0]);
+        }
+
+        Self::dfs(0, &edges, &mut visited)
+    }
+
+    fn dfs(cur: i32, edges: &Vec<Vec<i32>>, visited: &mut Vec<bool>) -> i32{
         let mut count = 0;
-        let connections: Vec<(i32, i32)> = connections.into_iter().map(|pair| (pair[0], pair[1])).collect();
-        while can_reach_0.len() < n as usize{
-            for (a, b) in connections.iter(){
-                if can_reach_0.contains(b){
-                    can_reach_0.insert(*a);
-                }else if can_reach_0.contains(a){
-                    count += 1;
-                    can_reach_0.insert(*b);
-                }
+        visited[cur as usize] = true;
+        for city in edges[cur as usize].iter(){
+            if visited[city.abs() as usize]{ continue; }
+            if *city > 0{
+                count += 1;
             }
+            count += Self::dfs(city.abs(), edges, visited);
         }
 
         count
