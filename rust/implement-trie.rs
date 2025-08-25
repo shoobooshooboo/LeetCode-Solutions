@@ -19,37 +19,44 @@ impl Trie {
             children: HashMap::new(),
         }
     }
+
+    fn with_value(value: char) -> Self{
+        Self{
+            value,
+            is_terminal: false,
+            children: HashMap::new(),
+        }
+    }
     
     fn insert(&mut self, word: String) {
         if word.is_empty(){
+            self.is_terminal = true;
             return;
         }
 
         let mut word_iter = word.chars();
         let c = word_iter.next().unwrap();
         let word: String = word_iter.collect();
-        if word.is_empty() {self.is_terminal = true; return;}
-        let next = word.chars().next().unwrap();
-        self.children.entry(next).or_insert(Trie::new()).insert(word);
+        self.children.entry(c).or_insert(Trie::with_value(c)).insert(word);
     }
     
     fn search(&self, mut word: String) -> bool {
-        if word.is_empty() {return false;}
-        if word.len() == 1 && self.value != '\0'{
-            return self.is_terminal && word.pop().unwrap() == self.value;
-        }
+        println!("{}", self.value);
+        if word.is_empty() {return self.is_terminal;}
+        let mut word_iter = word.chars();
+        let c = word_iter.next().unwrap();
+        let word: String = word_iter.collect();
+
+        self.children.get(&c).is_some_and(|child| child.search(word))
+    }
+    
+    fn starts_with(&self, mut word: String) -> bool {
+        if word.is_empty() {return true;}
         let mut word_iter = word.chars();
         let c = word_iter.next().unwrap();
         let word: String = word_iter.collect();
         
-        self.children.get(&c).is_some_and(|child| child.search(word))
-    }
-    
-    fn starts_with(&self, mut prefix: String) -> bool {
-        if prefix.len() == 1{
-            return prefix.pop().unwrap() == self.value;
-        }
-        false
+        self.children.get(&c).is_some_and(|child| child.starts_with(word))
     }
 }
 
